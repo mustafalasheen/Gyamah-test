@@ -1,0 +1,106 @@
+from __future__ import annotations
+
+import os
+import time
+import uuid
+import asyncio
+import hashlib
+import re
+import boto3
+from urllib.parse import quote, unquote
+from aiohttp import ClientSession, ClientError
+
+from ..typing import Optional, Cookies
+from ..requests.aiohttp import get_connector
+from ..Provider.template import BackendApi
+from . import is_accepted_format, extract_data_uri
+from .. import debug
+
+# S3 Configuration
+s3_client = boto3.client('s3')
+S3_BUCKET = 'your-bucket-name'
+S3_BASE_URL = f'https://{S3_BUCKET}.s3.amazonaws.com'
+
+async def copy_images(
+    images: list[str],
+    cookies: Optional[Cookies] = None,
+    headers: Optional[dict] = None,
+    proxy: Optional[str] = None,
+    alt: str = None,
+    add_url: bool = True,
+    target: str = None,
+    ssl: bool = None
+) -> list[str]:
+    """
+    Download images and store them in S3 bucket
+    Returns list of S3 URLs for the uploaded images
+    """
+    if add_url:
+        add_url = not cookies
+    
+    async with ClientSession(
+        connector=get_connector(proxy=proxy),
+        cookies=cookies,
+        headers=headers,
+    ) as session:
+        async def copy_image(image: str, target: str = None) -> str:
+            """Process individual image and upload to S3"""
+            try:
+                # Generate unique filename
+                file_hash = hashlib.sha256(image.encode()).hexdigest()[:16]
+                timestamp = int(time.time())
+                
+                # Sanitize alt text for filename
+                if alt:
+                    clean_alt = re.sub(
+                        r'[^\w\s.-]',
+                        '_', 
+                        unquote(alt).strip(), 
+                        flags=re.UNICODE
+                    )
+                    clean_alt = re.sub(r'[\s_]+', '_', clean_alt)[:100]
+                else:
+                    clean_alt = "image"
+
+                # Build filename
+                extension = get_image_extension(image)
+                s3_key = f"images/{timestamp}_{clean_alt}_{file_hash}{extension}"
+
+                # Handle different image types
+                if image.startswith("data:"):
+                    # Upload data URI content directly to S3
+                    image_data = extract_data_uri(image)
+                    s3_client.put_object(
+                        Bucket=S3_BUCKET,
+                        Key=s3_key,
+                        Body=image_data,
+                        ContentType=f'image/{extension[1:]}'
+                    )
+                else:
+                    # Download from URL and upload to S3
+                    if BackendApi.working and image.startswith(BackendApi.url):
+                        request_headers = BackendApi.headers if headers is None else headers
+                        request_ssl = BackendApi.ssl
+                    else:
+                        request_headers = headers
+                        request_ssl = ssl
+
+                    async with session.get(image, ssl=request_ssl, headers=request_headers) as response:
+                        response.raise_for_status()
+                        image_data = await response.read()
+                        s3_client.put_object(
+                            Bucket=S3_BUCKET,
+                            Key=s3_key,
+                            Body=image_data,
+                            ContentType=response.headers.get('Content-Type', f'image/{extension[1:]}')
+                        )
+
+                # Generate S3 URL
+                s3_url = f"{S3_BASE_URL}/{s3_key}"
+                return f"{s3_url}{'?url=' + quote(image) if add_url and not image.startswith('data:') else ''}"
+
+            except (ClientError, IOError, OSError) as e:
+                debug.error(f"Image upload failed: {type(e).__name__}: {e}")
+                return get_source_url(image, image)
+
+        return await asyncio.gather(*[copy_image(img, target) for img in images])

@@ -1,0 +1,5 @@
+https://github.com/xtekky/gpt4free/blob/b064f37ff75b7e4de78be7e764de8b54dfa39f22/.gitignore#L65
+
+https://github.com/xtekky/gpt4free/blob/main/docker/Dockerfile#L1
+
+https://github.com/xtekky/gpt4free/blob/b064f37ff75b7e4de78be7e764de8b54dfa39f22/docker/Dockerfile#L55

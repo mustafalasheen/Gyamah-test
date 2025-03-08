@@ -1,0 +1,9 @@
+python -m json.tool complex_hard_to_read.json 
+It formats your JSON for easy reading and shows an error if something's wrong.
+
+
+
+
+
+
+

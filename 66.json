@@ -1,0 +1,21 @@
+{
+  "id": "chatcmpl-8kN2nPi9Rq5UVx4",
+  "object": "chat.completion",
+  "created": 1703764523,
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "A case typically reaches the Supreme Court through several steps:\n\n1. Lower Court Decisions: The case must first be heard in lower federal courts or state supreme courts\n\n2. Appeal Process: After lower court rulings, parties can petition the Supreme Court through a 'writ of certiorari'\n\n3. Case Selection: The Supreme Court chooses to hear only about 1% of the cases petitioned, typically those that:\n   - Involve important constitutional issues\n   - Resolve conflicts between different circuit courts\n   - Have national significance\n\n4. Four Justices must agree to hear the case (known as 'the rule of four')\n\nOnce accepted, both sides submit briefs and present oral arguments before the Court makes its final decision."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 48,
+    "completion_tokens": 156,
+    "total_tokens": 204
+  }
+}

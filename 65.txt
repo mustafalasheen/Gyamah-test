@@ -1,0 +1,7 @@
+latest version published for their Python package g4f (0.4.8.0)
+
+What is the latest version of their Docker Hub package?
+the same as the python package
+
+initial development where anything may change at any time
+

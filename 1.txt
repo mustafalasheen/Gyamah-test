@@ -1,0 +1,5 @@
+الكوماند بينزل الاكسريبت من الموقع الموضح في اللينك وبياخده دايريكت للباش شيل عشان ينفذه مع وجود بعض الاعلام اللي بتساعد في تحديد الاخطاء وخلافه
+-f : server errors 
+-s : silent mode
+-S : show error masseges in case it fails
+-L : follow redirect 

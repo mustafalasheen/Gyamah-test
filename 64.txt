@@ -1,0 +1,2 @@
+ Search engine: DuckDuckGo
+Python library: duckduckgo_search

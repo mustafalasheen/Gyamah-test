@@ -1,0 +1,12 @@
+{
+  "args": {},
+  "headers": {
+    "Accept": "*/*",
+    "Ghaymah": "Cloud",
+    "Host": "httpbin.org",
+    "User-Agent": "curl/8.5.0",
+    "X-Amzn-Trace-Id": "Root=1-67cca939-31fec2965df080fa246411e0"
+  },
+  "origin": "154.238.222.176",
+  "url": "https://httpbin.org/get"
+}

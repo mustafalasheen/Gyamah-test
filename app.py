@@ -2,6 +2,11 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# Add a root endpoint for testing
+@app.route('/')
+def home():
+    return jsonify({'message': 'API is running'}), 200
+
 # In-memory storage for items
 items = []
 
@@ -26,4 +31,4 @@ def delete_item(item_name):
     return jsonify({'error': 'Item not found'}), 404
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
